@@ -1,0 +1,1031 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Language" content="en" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>.NET Interface for Total Commander plugins</title>
+    <style type="text/css">
+        table
+        {
+            border-style: solid;
+            border-width: 1px;
+            width: 800px;
+        }
+        .blue
+        {
+            color: #00CCFF;
+        }
+        .purple
+        {
+            color: #0000FF;
+        }
+        .red
+        {
+            color: #FF0000;
+        }
+        .red-bold
+        {
+            color: #FF0000;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        .NET Interface for Total Commander plugins</h1>
+    <p>
+        Provided interface allows to create <a href="http://www.ghisler.com">Total Commander</a>
+        plugins using .NET supporting languages.</p>
+    <p>
+        This product is provided under the <a href="http://www.opensource.org/licenses/mit-license.php">
+        MIT License</a>.</p>
+    <ol>
+        <li><a href="#section-1">Main features.</a></li>
+        <li><a href="#section-2">Common considerations.</a>
+            <ul>
+                <li><a href="#section-2-1">Definition of terms (to avoid misunderstanding).</a></li>
+                <li><a href="#section-2-2">.NET Framework version.</a></li>
+                <li><a href="#section-2-3">Paths to .NET Framework utilities.</a></li>
+            </ul>
+        </li>
+        <li><a href="#section-3">Content of the downloaded folders.</a>
+            <ul>
+                <li><a href="#section-3-1">Folder 'Documentation'.</a></li>
+                <li><a href="#section-3-2">Folder 'TcPluginCore'.</a></li>
+                <li><a href="#section-3-3">Folder 'Deployment'.</a></li>
+                <li><a href="#section-3-4">Folder 'TcPluginSamples'.</a></li>
+            </ul>
+        </li>
+        <li><a href="#section-4">How to create new TC plugin with provided .NET Interface.</a>
+            <ul>
+                <li><a href="#section-4-1">Requirements.</a></li>
+                <li><a href="#section-4-2">New plugin creation process.</a></li>
+            </ul>
+        </li>
+        <li><a href="#section-5">How it works.</a></li>
+        <li><a href="#section-6">Advanced notes.</a>
+            <ul>
+                <li><a href="#section-6-1">Plugin Configuration.</a></li>
+                <li><a href="#section-6-2">Tracing.</a></li>
+                <li><a href="#section-6-3">File System plugins: manage the lifetime cycle.</a></li>
+                <li><a href="#section-6-4">File System plugins: content features.</a></li>
+                <li><a href="#section-6-5">Lister plugins: WinForms vs. WPF.</a></li>
+                <li><a href="#section-6-6">WinForms Lister plugins: keyboard handling.</a></li>
+            </ul>
+        </li>
+        <li><a href="#section-7">Deployment.</a></li>
+        <li><a href="#section-8">Source code.</a></li>
+    </ol>
+    <hr align="left" style="width: 556px" width="50%" />
+    <h2 id="section-1">
+        1. Main features.</h2>
+    <p>
+        If you are .NET developer and have a good idea for Total Commander plugin - provided
+        <b>.NET Interface</b> is the right choice for you.
+        <br/>
+        With this interface you can concentrate on the main functionality of your plugin
+        without having to worry about most of mundane tasks of TC plugin building.
+    </p>
+    <p>
+        Main features:</p>
+    <ul>
+        <li>use all flexibility and power of .NET Framework to implement required plugin functionality,</li>
+        <li>your plugin project will contain managed code only, not even one line of C++ unmanaged code,</li>
+        <li>base classes for all TC plugin types - File System, Lister, Packer, Content, and QuickSearch</li>
+        <li>easy debugging with included tracing system,</li>
+        <li>all optional methods not implemented in managed plugin are excluded from the final
+            TC plugin (so TC will never call them),</li>
+        <li>TC calls are translated into managed calls with parameters marshaling,</li>
+        <li>one unified Plugin Loader loads all types of TC plugins,</li>
+        <li>each plugin is loaded into separate Application Domain (AD) to provide isolation
+            and security boundaries for executing managed code,</li>
+        <li>control over the lifetime policy for managed plugin instance is allowed,</li>
+        <li>Unicode and 64-bit plugin features are supported automatically, </li>
+        <li>final binary files are compact (usually less than 100 KB).</li>
+    </ul>
+    <hr align="left" style="width: 556px" width="50%" />
+    <h2 id="section-2">
+        2. Common considerations.</h2>
+    <h3 id="section-2-1">
+        2.1. Definition of terms (to avoid misunderstanding).</h3>
+    <p>
+        Hereinafter term <b>plugin</b> will be used in two different contexts:
+    </p>
+    <ul>
+        <li>Term <b>TC plugin</b> will be used for standard Total Commander (TC) plugin (file
+            with .wfx, .wlx, .wdx, or .wcx extension).</li>
+        <li>Term <b>managed plugin</b> or sometimes just <b>plugin</b> will be used for managed
+            class library created with provided .NET Interface.</li>
+    </ul>
+    <h3 id="section-2-2">
+        2.2. .NET Framework version.</h3>
+    <p>
+        Provided interface allows creating managed plugins using .NET Framework version 4.0 and higher.
+        <br/>
+		If Microsoft Visual Studio is your development tool, you have to use version 2010 or higher to work with this interface.</p> 
+	<p>
+        If you need to create TC plugin using earlier .NET Framework version, download previous version of this interface (1.3).</p>
+    <h3 id="section-2-3">
+        2.3. Paths to .NET Framework utilities.</h3>
+    <p>
+        Provided interface uses some .NET Framework and other utilities in its work.
+        <br/>
+        Paths to these utilities depend on developer computer and have to be setup properly.
+        <br/>
+        <span class="red-bold">WARNING</span>: Please set utilities' paths in provided interface corresponding to 
+        your computer in the following script and configuration files:</p>
+    <ul>
+        <li><b>GAC_Install.bat</b> and <b>GAC_Uninstall.bat</b> in the <a href="#section-3-2">TcPluginCore</a> folder - set path for gacutil.exe (Global Assembly Cache Tool).</li>
+        <li><b>WrapperBuilder.exe.config</b> in the <a href="#clr2-folder">TcPluginCore</a> folder - 
+			edit <strong>appSettings</strong> section to set paths for:
+	    <ul>
+			<li>ilasm.exe (IL Assembler) - edit key <strong>assemblerPath</strong>,</li>
+			<li>ildasm.exe (IL Disassembler) - edit key <strong>disassemblerPath</strong>,</li>
+			<li>rc.exe (Resource Compiler) - edit key <strong>rcPath</strong>, and</li>
+			<li>zip.exe (ZIP Archiver) - edit key <strong>zipArchiver</strong>. This tool is required to create installation archive for new TC plugin. 
+				<br/>
+				WrapperBuilder will not create installation archive if this path is not set.</li>
+	    </ul>
+    </ul>
+    <hr align="left" style="width: 556px" width="50%" />
+    <h2 id="section-3">
+        3. Content of the downloaded folders.</h2>
+    <h3 id="section-3-1">
+        3.1. Folder &#39;Documentation&#39;.</h3>
+    <table border="1" frame="box">
+        <tbody>
+            <tr>
+                <td width="200">
+                    ReadMe.html
+                </td>
+                <td width="580">
+                    This file
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    license.txt
+                </td>
+                <td>
+                    File with the <a href="http://www.opensource.org/licenses/mit-license.php">MIT License</a>
+                    text.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    dotNetPluginMethods.xlsx
+                </td>
+                <td>
+                    Excel spreadsheet with description of each TC plugin method and specifics of their
+                    implementation in managed plugins.
+                    <br/>
+                    Also it contains description of all settings used for plugin configuration.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <h3 id="section-3-2">
+        3.2. Folder &#39;TcPluginCore&#39;.</h3>
+    <p>
+        This folder contains files required for plugin developer to create and debug new
+        managed plugins:
+        <br/>
+        Assemblies in this folder were compiled in <b>Debug</b> configuration.</p>
+    <table border="1" frame="box">
+        <tbody>
+            <tr>
+                <td width="200">TcPluginInterface.dll</td>
+                <td width="580">TC plugin interface assembly; contains interfaces and base classes for TC plugins.</td>
+            </tr>
+            <tr>
+                <td>TcPluginInterface.pdb</td>
+                <td>Debugging information for above assembly.</td>
+            </tr>
+            <tr>
+                <td>TcPluginTools.dll</td>
+                <td>TC plugin utility assembly; contains classes for plugin loading, callbacks and error handling.</td>
+            </tr>
+            <tr>
+                <td>TcPluginTools.pdb</td>
+                <td>Debugging information for above assembly.</td>
+            </tr>
+            <tr>
+                <td>GAC_Install.bat</td>
+                <td>Script to install core assemblies into the GAC (Global Assembly Cache). The assemblies are installed into CRL4 cache 
+					located in the <b>%windir%\Microsoft.NET\assembly</b> folder.</td>
+            </tr>
+            <tr>
+                <td>GAC_Uninstall.bat</td>
+                <td>Script to remove core assemblies from the GAC.</td>
+            </tr>
+            <tr>
+                <td>Totalcmd.exe.config</td>
+                <td>Total Commander configuration file; it contains tracing settings for new plugin debugging.</td>
+            </tr>
+            <tr>
+                <td>WrapperBuilder.exe</td>
+                <td>Console program to build plugin wrapper DLL that exports required TC plugin methods.</td>
+            </tr>
+            <tr>
+                <td>WrapperBuilder.exe.config</td>
+                <td>WrapperBuilder configuration; it defines paths to some <a href="#section-2-3">.NET Framework utilities</a> on developer's computer.</td>
+            </tr>
+            <tr>
+                <td>WfxWrapper.dll</td>
+                <td>Template assembly for TC File System plugin wrapper.</td>
+            </tr>
+            <tr>
+                <td>WlxWrapper.dll</td>
+                <td>Template assembly for TC Lister plugin wrapper.</td>
+            </tr>
+            <tr>
+                <td>WcxWrapper.dll</td>
+                <td>Template assembly for TC Packer plugin wrapper.</td>
+            </tr>
+            <tr>
+                <td>WdxWrapper.dll</td>
+                <td>Template assembly for TC Content plugin wrapper.</td>
+            </tr>
+            <tr>
+                <td>QSWrapper.dll</td>
+                <td>Template assembly for TC QuickSearch plugin wrapper.</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>
+        Store this folder on developer's computer and install main assemblies into the GAC using <b>GAC_Install.bat</b>.
+        <br/>
+        This folder should be accessible for any new managed plugin project. I recommend
+        you to add it as subfolder to new project folder.</p>
+    <h3 id="section-3-3">
+        3.3. Folder &#39;Deployment&#39;.</h3>
+    <p>
+        This folder contains Windows Installer package <b>TcPluginSetup.msi</b>. 
+        <br/>
+        It contains core assemblies required in order for any TC plugin developed with provided .NET Interface to work.
+        <br/>
+        Assemblies in this package were compiled in <b>Release</b> configuration.</p>
+    <p> 
+        You have to provide this package to the end user with your plugin. See details of package installation 
+        <a href="#section-7-2">below</a>.</p>
+    <h3 id="section-3-4">
+        3.4. Folder &#39;TcPluginSamples&#39;.</h3>
+    <p>
+        This folder contains sample solution with several sample TC plugins created with provided .NET Interface.
+        <br/>
+        It’s good start point - please look through these samples before starting your own
+        plugin.</p>
+    <table border="1" frame="border">
+        <tbody>
+            <tr>
+                <td width="200">FSSample</td>
+                <td width="580">File System plugin sample - just local file system.</td>
+            </tr>
+            <tr>
+                <td>FSSampleWithContent</td>
+                <td>The same as above with Content features.</td>
+            </tr>
+            <tr>
+                <td>ListerSample</td>
+                <td>Lister plugin sample - simple text viewer with trace log.
+					<br/>
+                    Created with <b>Windows Forms</b> user interface.</td>
+            </tr>
+            <tr>
+                <td>ListerSampleWpf</td>
+                <td>Lister plugin sample - simple text viewer with trace log.
+                    <br/>
+                    Created with <b>Windows Presentation Foundation (WPF)</b> user interface.</td>
+            </tr>
+            <tr>
+                <td>PackerSampleCS</td>
+                <td>Sample Packer plugin - MD5/SHA1 checksum generator/checker (idea of 
+                    <a href="http://sysd.org/stas/node/42">Stanislaw Y. Pusep</a>)</td>
+            </tr>
+            <tr>
+                <td>PackerSampleZip</td>
+                <td>Sample Packer plugin - simple ZIP packer using <a href="http://icsharpcode.github.io/SharpZipLib/">
+                    ICSharpCode.SharpZipLib</a> assembly</td>
+            </tr>
+            <tr>
+                <td>ContentSample</td>
+                <td>Simple Content plugin, shows additional file information columns.</td>
+            </tr>
+            <tr>
+                <td>QSSample</td>
+                <td>Simple QuickSearch plugin.</td>
+            </tr>
+        </tbody>
+    </table>
+    <br/>
+    <hr align="left" style="width: 556px" width="50%" />
+    <h2 id="section-4">
+        4. How to create new TC plugin with provided .NET Interface.</h2>
+    <h3 id="section-4-1">
+        4.1. Requirements.</h3>
+    <ol start="0">
+        <li>
+            <p>
+                <b>First of all - you have to have a good idea for new TC plugin.</b>
+                <br/>
+                Otherwise provided .NET Interface will not help you! :-)</p>
+        </li>
+        <li>
+            <p>
+                IDE to create .NET assemblies. I used Microsoft Visual Studio (2010 and higher).</p>
+            <p>
+                You can also try alternative IDEs, such as <a href="http://www.sharpdevelop.com/OpenSource/SD">
+                    SharpDevelop</a>, <a href="http://www.monodevelop.com">MonoDevelop</a> or <a href="http://www.embarcadero.com/products/rad-studio">
+                        Embarcadero RAD Studio</a>.</p>
+        </li>
+        <li>
+            <p>
+                Content of the downloaded <b>TcPluginCore</b> folder.
+                <br/>
+                You can use it to create any number of different managed plugins.</p>
+            <p>
+                Install required core assemblies into the GAC using 
+                <b>GAC_Install.bat</b>.</p>
+        </li>
+    </ol>
+    <h3 id="section-4-2">
+        4.2. New plugin creation process.</h3>
+    <p>
+        Below are steps to create new File System (wfx) plugin called <b>YourPlugin</b>.
+        <br/>
+        Creation of another TC plugins (wlx, wdx or wcx) is similar.</p>
+    <ol>
+        <li>
+            <p>
+                Create new .NET project <b>YourPlugin</b>.</p>
+        </li>
+        <li>
+            <p>
+                I recommend you to add the folder <b>TcPluginCore</b> from this distributive as
+                subfolder to new project folder.
+                <br/>
+                Actually you can keep this folder anywhere on your hard drive; check paths in the steps 3 and 9 in this case.</p>
+        </li>
+        <li>
+            <p>
+                Add reference to assembly <b>TcPluginCore\TcPluginInterface.dll</b>.
+                <br/>
+                Set <b>Copy Local</b> property for the assembly to <b>False</b>.</p>
+        </li>
+        <li>
+            <p>
+                Create a class implementing your plugin functionality.
+                <br/>
+                Inherit it from base class <b>FsPlugin</b> defined in <b>TcPluginInterface</b> assembly.
+                <br/>
+                (Use base classes <b>ListerPlugin</b>, <b>PackerPlugin</b>, <b>ContentPlugin</b>, or <b>QSPlugin</b>
+                for another plugin types.)</p>
+        </li>
+        <li>
+            <p>
+                Create constructor receiving one parameter of type <b>StringDictionary</b> - plugin
+                settings dictionary.
+                <br/>
+                Do not forget to call the base constructor.
+                <br/>
+            </p>
+            <div style="font-family: 'Courier New',Courier,monospace; margin-left: 40px; font-size: 14;
+                margin-top: 10px; margin-bottom: 10px; background-color: rgb(238, 238, 238);
+                width: 600px;">
+                <b>public </b>YourPlugin(<span class="purple">StringDictionary</span> pluginSettings)
+                <br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;<b>base</b>(pluginSettings)
+                <br/>
+                { &lt;...Your code here...&gt; };
+            </div>
+            <p>
+            </p>
+        </li>
+        <li>
+            <p>
+                Create override methods for all mandatory and some optional methods of plugin interface.
+                (You can find all method descriptions in the <b>dotNetPluginMethods.xlsx</b> <a href="#section-3-1">
+                    spreadsheet</a>.)
+                <br/>
+                Any optional methods not overridden in your plugin will be excluded from the plugin
+                wrapper.</p>
+        </li>
+        <li>
+            Special cases:
+            <ul>
+                <li>If you need to implement Content features in your File System plugin - read <a href="#section-6-4">
+                    additional information</a> below.</li>
+                <li>If you need to managing the lifetime cycle for your File System plugin - read <a href="#section-6-3">
+                    additional information</a> below.</li>
+                <li>If you create Lister plugin with <b>Windows Presentation Foundation (WPF)</b> user interface- read <a href="#section-6-5">
+                    additional information</a> below.</li>
+            </ul>
+        </li>
+        <li>
+            <p>
+                Build your project in Debug mode.</p>
+        </li>
+        <li id="wrapper_builder">
+            <p>
+                Build plugin wrapper - intermediate layer between Total Commander and your managed
+                plugin with proper <b>.wfx</b> extension.
+                <br/>
+                This wrapper is a real TC plugin using your managed plugin as a class library.
+                <br/>
+                <br/>
+                Use <b>WrapperBuilder.exe</b> console application to do it.</p>
+            <ul>
+                <li>Preferred way is to add WrapperBuilder call to the post-build event of your project.
+                    Use following line to create both 32-bit and 64-bit wrapper versions:
+                    <br/>
+                    <div style="font-family: 'Courier New',Courier,monospace; margin-left: 40px; font-size: 14;
+                        margin-top: 10px; margin-bottom: 10px; background-color: rgb(238, 238, 238);
+                        width: 850px;">
+                        $(SolutionDir)TcPluginCore\WrapperBuilder.exe /<span class="red-bold">wfx</span> /p=$(TargetPath) /v /$(ConfigurationName)
+                    </div>
+                    Important notes: 
+                    <ul>
+                        <li>Substitute <span class="red-bold">wfx</span> with <b>wlx</b>, <b>wcx</b>, <b>wdx</b>, or <b>qs</b>
+                            for other plugin types.</li>
+                        <li>Add key <b>/x32</b> to the command line if you want to create plugin wrapper for 32-bit version only.
+                            <br/>
+                            Key <b>/x64</b> will create wrapper for 64-bit version only.</li>
+                        <li>Set paths to required .NET framework utilities on your computer in configuration file <b>WrapperBuilder.exe.config</b>
+							(see <a href="#section-2-3">details</a>).</li>
+                    </ul>
+                    <p>
+                    By default WrapperBuilder creates wrapper file with the same name as your managed plugin assembly and 
+                    <b>w?x</b> extension (<b>tcmatch.dll</b> file for QuickSearch plugin). 
+                    <br/>
+                    You can change wrapper file name using WrapperBuilder <b>/o</b> key.</p></li>
+                <li>Also you can run it as a separate console application (run &quot;<strong>WrapperBuilder /?</strong>&quot; for parameter details).</li>
+            </ul>
+        </li>
+        <li>
+            <p>
+                After the build your output folder will usually contain the following files:</p>
+            <ul>
+                <li>YourPlugin.wfx -plugin wrapper, works as real TC plugin,</li>
+                <li>YourPlugin.wfx64 - 64-bit version of plugin wrapper (if you called <b>WrapperBuilder</b>
+                    with /x64 key),</li>
+                <li>YourPlugin.dll - managed plugin; your class library implementing main plugin features</li>
+            </ul>
+        </li>
+        <li>Configure plugin - see details in <a href="#section-6-1">Plugin Configuration</a>
+            section.</li>
+        <li>After the full cycle of debugging rebuild your project in Release mode for deployment.</li>
+    </ol>
+    <hr align="left" style="width: 556px" width="50%" />
+    <h2 id="section-5">
+        5. How it works.</h2>
+    <p>
+        Assembly TcPluginInterface.dll in current .NET Interface provides following class
+        hierarchy:
+    </p>
+    <p align="left">
+        <img src="img/tc_plugin_classes.png" alt="Plan Setup Screen Sample" style="margin-left: 50px" /></p>
+    <p>
+        This layer provides base plugin functionality: configuration, communication with
+        plugin loader, error handling and tracing capabilities, event handlers for callback
+        functions, life cycle management.</p>
+    <p>
+        Developer implements own managed class derived from one of the base plugin classes.
+        It uses all flexibility and power of .NET Framework to implement main features provided
+        in new plugin.</p>
+    <p>
+        Managed plugin communicates with TC through plugin wrapper. This wrapper is a real
+        TC plugin which methods are called by TC.
+        <br/>
+        Wrapper templates (separate for each plugin type) are managed class libraries that
+        translate TC calls into managed calls providing parameters marshaling and cross
+        Application Domain boundary communication.
+        <br/>
+        During the <a href="#wrapper_builder">development stage</a> <b>WrapperBuilder</b>
+        program prepares wrapper template to become a real TC plugin:</p>
+    <ul>
+        <li>Excludes all optional methods not implemented in new managed plugin from the template
+            (and so prevents TC from calling those methods), and</li>
+        <li>Transforms template managed class library into standard Windows DLL. It allows TC
+            to call its methods as standard DLL calls. (WrapperBuilder uses method described
+            by <a href="http://www.codeproject.com/Articles/8124/Unmanaged-code-can-wrap-managed-methods">
+                Emilio Reale</a> and <a href="http://www.codeproject.com/Articles/16310/How-to-Automate-Exporting-NET-Function-to-Unmanage">
+                    Selvin</a> to do it)</li>
+    </ul>
+    <p>
+        Following scheme describes how TC, wrapper and managed plugin interact with each
+        other.
+        <br/>
+        Code in <span class="blue">blue block</span> is part of TC code, <span class="red">red
+            block</span> is managed plugin code, and <b>black blocks</b> contain code from
+        provided .NET Interface</p>
+    <div>
+        <p align="left">
+            <img src="img/tc_plugin_work.png" alt="Plan Setup Screen Sample" /></p>
+    </div>
+    <div>
+        <ol>
+            <li>Total Commander calls some plugin function from the wrapper.</li>
+        </ol>
+        <div style="margin-left: 40px;">
+            <i>If this is the first call to plugin, steps 2 - 5 will be executed.</i>
+            <ol start="2">
+                <li>Plugin Wrapper calls Plugin Loader to create an object for communication with TC.</li>
+                <li>Plugin Loader reads configuration (file <b>YourPlugin.wfx.config</b> - see <a
+                    href="#section-6-1">details</a>) and defines assembly and class required for loading.
+                    <br/>
+                    Then it creates application domain (AD) for new managed plugin, loads required assembly there,
+                    and tries to create remote object of required class in the new AD.
+                    <br/>
+                    Working in separate AD provides isolation and security boundaries for executing
+                    managed code.</li>
+                <li>Managed plugin constructor is called inside the plugin AD. It creates instance of required class.
+                    This instance is remote object whose methods will be called by plugin wrapper.
+                    <br/> 
+                    Then plugin returns a proxy for created object over AD boundary.
+                    <br/>
+                    So, managed plugin assembly is loaded only into plugin-specific AD domain, not
+                    into the default one.
+                    <br/>
+                    Default AD only contains the code from the provided .NET Interface.</li>
+                <li>Plugin Loader stores returned proxy object in the Plugin Wrapper.
+                    <br/>
+                    This proxy is used to transfer any subsequent TC calls to the managed plugin.</li>
+            </ol>
+        </div>
+        <ol start="6">
+            <li>Proxy calls appropriate method from the managed plugin, marshaling passed parameters
+                to the managed types.</li>
+            <li>Managed plugin executes calling method and returns result.</li>
+            <li>Proxy transforms returned value to the required unmanaged type/structure, and returns
+                result to TC.</li>
+        </ol>
+    </div>
+    <hr align="left" style="width: 556px" width="50%" />
+    <h2 id="section-6">
+        6. Advanced notes.</h2>
+    <h3 id="section-6-1">
+        6.1. Plugin Configuration.</h3>
+    <p>
+        Main plugin constructor receives one parameter of type <b>StringDictionary</b> -
+        plugin settings, containing string key-value pairs.
+        <br/>
+        Plugin settings are loaded from <b>YourPlugin.w?x.config</b> file (*.w?x64.config
+        for 64-bit plugin version).
+        <br/>
+        Loaded key-value pairs are stored in the property <b>Settings</b> of the <b>TcPlugin</b>
+        class.</p>
+    <div style="font-family: 'Courier New',Courier,monospace; margin-left: 40px; font-size: 14;
+        margin-top: 10px; margin-bottom: 10px; background-color: rgb(238, 238, 238);
+        width: 600px;">
+        <b>public</b> <span class="purple">StringDictionary</span> Settings { <b>get</b>;
+        <b>private set</b>; }
+    </div>
+    <p>
+        See <b>Configuration</b> tab of <b>dotNetPlugins.xlsx</b> <a href="#section-3-1">spreadsheet</a>
+        for information about settings used by plugin loader and wrappers.</p>
+    <p>
+        Each configuration key uses default value, so simple plugins can be written with
+        no configuration file at all.
+        <br/>
+        You can add more key-value pairs in your plugin specific configuration and access
+        them via <b>Settings</b> property.</p>
+    <p>
+        Following is an example of configuration file for simple Lister plugin:</p>
+    <div style="font-family: 'Courier New',Courier,monospace; margin-left: 40px; font-size: 14;
+        margin-top: 10px; margin-bottom: 10px; background-color: rgb(238, 238, 238);
+        width: 600px;">
+        &lt;?xml <span class="red">version</span>=<span class="purple">&quot;1.0&quot;</span>
+        <span class="red">encoding</span>=<span class="purple">&quot;utf-8&quot;</span>
+        ?&gt;
+        <br/>
+        &lt;configuration&gt;
+        <br/>
+        &nbsp;&nbsp;&lt;appSettings&gt;
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;add <span class="red">key</span>=<span class="purple">&quot;pluginAssembly&quot;</span>
+        <span class="red">value</span>=<span class="purple">&quot;YourPlugin.dll&quot;</span>/&gt;
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;add <span class="red">key</span>=<span class="purple">&quot;pluginClass&quot;</span>
+        <span class="red">value</span>=<span class="purple">&quot;YourPluginTest&quot;</span>/&gt;
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;add <span class="red">key</span>=<span class="purple">&quot;pluginTitle&quot;</span>
+        <span class="red">value</span>=<span class="purple">&quot;Test Local File System&quot;</span>/&gt;
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;add <span class="red">key</span>=<span class="purple">&quot;writeTrace&quot;</span>
+        <span class="red">value</span>=<span class="purple">&quot;true&quot;</span>/&gt;
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;add <span class="red">key</span>=<span class="purple">&quot;showAuthorInfo&quot;</span>
+        <span class="red">value</span>=<span class="purple">&quot;false&quot;</span>/&gt;
+        <br/>
+        &nbsp;&nbsp;&lt;/appSettings&gt;<br/>
+        &lt;/configuration&gt;</div>
+    <h3 id="section-6-2">
+        6.2. Tracing.</h3>
+    <p>
+        Tracing is available for debugging purposes. It works only if you build you plugin
+        in Debug configuration, not in Release one.
+    </p>
+    <p>
+        To switch tracing ON set the following parameters in the plugin configuration file
+        to <b>true</b>:
+    </p>
+    <ul>
+        <li><b>writeTrace</b></li>
+        <li><b>writeStatusInfo</b> (File System plugins only - allows to trace <b>FsStatusInfo</b>
+            calls)</li>
+    </ul>
+    <p>
+        You also need to set tracing parameters in Total Commander. Use file <b>Totalcmd.exe.config</b>
+        file in the <b>TcPluginCore </b>folder to do it.
+        <br/>
+        Copy this file to the main TC folder. If you already have a file with this name,
+        just add <b>system.diagnostics</b> section into it.
+        <br/>
+        Then configure the output file for tracing (attribute <b>initializeData</b> in <b>listeners.traceListener</b>
+        key) and desired trace level (attribute <b>value</b> in <b>switches.DotNetPlugins</b>
+        key, see trace level details in the file)</p>
+    <p>
+        Following plugin actions are traced:
+    </p>
+    <ul>
+        <li>Details of plugin loading and unloading (traced by plugin loader),</li>
+        <li>Call to every TC plugin method, different methods have different tracing levels
+            - see methods <a href="#section-3-1">spreadsheet</a> for details (traced by plugin
+            wrappers),
+            <br/>
+            <span class="red-bold">WARNING</span>: some methods (with trace level <b>4 - Verbose</b>) can produce a
+            lot of tracing information,</li>
+        <li><b>File System</b> plugins can also trace each <b>FsStatusInfo</b> call (by FS plugin
+            wrapper, with <b>Warning</b> trace level),</li>
+        <li>Any message from your plugin - just call method <b>TraceProc</b> defined in base
+            <b>TcPlugin</b> class. </li>
+    </ul>
+    <p>
+        Single trace line looks like:</p>
+    <div style="font-family: 'Courier New',Courier,monospace; margin-left: 40px; font-size: 14;
+        margin-top: 10px; margin-bottom: 10px; background-color: rgb(238, 238, 238);
+        width: 600px;">
+        &lt;date&gt; &lt;time_with_milliseconds&gt;&nbsp; - &lt;plugin_id&gt;: &lt;message&gt;
+    </div>
+    <p>
+        <b>&lt;plugin_id&gt;</b> depends on plugin type and <b>useTitleForTrace</b> boolean
+        configuration parameter:</p>
+    <table border="1" frame="box">
+        <tbody>
+            <tr>
+                <th style="width: 220px;">
+                    Plugin type
+                </th>
+                <th style="width: 150px; text-align: center;">
+                    useTitleForTrace&nbsp;
+                </th>
+                <th style="width: 310px;">
+                    &lt;plugin_id&gt;
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    Lister, Packer, Content(wdx)
+                </td>
+                <td>
+                </td>
+                <td>
+                    Plugin Title (read from configuration)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    File System, Content (part of FS)
+                </td>
+                <td style="text-align: center;">
+                    <b>true</b>
+                </td>
+                <td>
+                    Plugin Title
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    File System, Content (part of FS)
+                </td>
+                <td style="text-align: center;">
+                    <b>false</b> (default)
+                </td>
+                <td>
+                    FS Plugin Number (initialized&nbsp;during FsInit call)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p>
+        So real trace lines look like:</p>
+    <div style="font-family: 'Courier New',Courier,monospace; margin-left: 40px; font-size: 14;
+        margin-top: 10px; margin-bottom: 10px; background-color: rgb(238, 238, 238);
+        width: 800px;">
+        03/14/14 14:27:43.166 - 33: SetCryptCallback: CryptoNumber=1819109126, Flags=1,781CBB4
+        <br/>
+        04/07/14 12:04:47.649 - .NET Lister: SendCommand (401858, NewParams, Ansi, Center):
+        OK
+    </div>
+    <h3 id="section-6-3">
+        6.3. File System plugins: managing the lifetime cycle.</h3>
+    <p>
+        Base managed plugin classes are inherited from the <b>MarshalByRefObject</b> class
+        to allow communication across application domain boundaries.</p>
+    <p>
+        Some of <b>MarshalByRefObject</b> methods allow control over the lifetime policy
+        for managed plugin instance.
+    </p>
+    <p>
+        If your plugin has sensitive and secure connection to some external server (SFTP,
+        Database, etc.) it can be helpful to limit connection time in idle state.
+        <br/>
+        This feature is implemented in the base File System plugin class <b>FsPlugin.</b></p>
+    <p>
+        <b>FsPlugin-</b>overridden method <b>InitializeLifetimeService</b> associates a
+        lifetime lease object with the plugin. This lease object is periodically examined
+        by the application domain lease manager. 
+        <br/>
+        After the lease expires the managed plugin
+        instance become not accessible. It works like the timeout feature for remote objects.</p>
+    <p>
+        Plugin sets lease properties via plugin configuration parameters:
+    </p>
+    <ul>
+        <li><b>initialLifeTime</b> - initial time for the lease. If it does not exist or is
+            <b>TimeSpan.Zero</b>, then the lease will never timeout and the plugin associated
+            with it will have an infinite lifetime.</li>
+        <li><b>renewOnCallTime</b> - amount of time by which any TC method call renews plugin
+            lifetime.</li>
+    </ul>
+    <p>
+        Parameter values must be valid time interval strings (see help for <b>System.TimeSpan</b>
+        for details).
+    </p>
+    <p>
+        You can override <b>InitializeLifetimeService</b> method in your File System plugin
+        to implement more complex lifetime strategy, including leases's sponsor support.
+    </p>
+    <p>
+        See more details about remote object lifecycle in <a href="http://msdn.microsoft.com/en-us/magazine/cc300474.aspx">
+            Microsoft documentation</a>.
+    </p>
+    <p>
+        I didn't implement this feature for other plugin types (lister, packer or content)
+        in the provided interface because it seems useless for plugins other than File System.
+        <br/>
+        But it can be easy implemented for any plugin type if needed.</p>
+    <h3 id="section-6-4">
+        6.4. File System plugins: content features.</h3>
+    <p>
+        <b>IFsPlugin</b> interface doesn't have methods for corresponding <b>FsContent*</b>
+        functions. It has property of type <b>ContentPlugin</b> instead.
+    </p>
+    <p>
+        You can implement Content features for your File System plugin in different ways:</p>
+    <ul>
+        <li>In the same class as file system methods (add <b>IContentPlugin</b> interface in
+            class definition),</li>
+        <li>In the separate class in the same assembly as file system class, or</li>
+        <li>In the class in separate assembly.</li>
+    </ul>
+    <p>
+        Plugin loader uses configuration parameters <b>contentAssembly</b> and <b>contentClass</b>
+        (in addition to <b>pluginAssembly</b> and <b>pluginClass</b>) to search for class
+        that implements content methods.
+        <br/>
+        If plugin loader finds no such class, wrapper builder will exclude all <b>FsContent*</b>
+        methods from created File System plugin wrapper.</p>
+    <h3 id="section-6-5">
+        6.5. Lister plugins: WinForms vs. WPF.</h3>
+    <p>
+        You can use both <b>Windows Forms</b> and <b>Windows Presentation Foundation (WPF)</b> user interface
+        to create managed Lister plugin.</p>
+    <p>
+        You need to create your own visual container class and return an instance of this class 
+        as a result of call to <b>Load</b> managed plugin method.
+        <br/>
+        Derive your container class from:</p>
+        <ul>
+            <li><b>System.Windows.Forms.UserControl</b> if you use <b>Windows Forms</b> to create plugin, or</li>
+            <li><b>System.Windows.Controls.UserControl</b> if you use <b>WPF</b></li>
+        </ul>
+    <p>
+        Then WLX wrapper embeds this container as a child into the parent Total Commander <b>Lister window</b>, 
+        creates handle for the container and returns this handler back to TC.</p>
+    <p>
+        WLX wrapper uses <b>IListerHandlerBuilder</b> interface to create handler for the
+        visual container created in managed Lister plugin.
+        <br/>
+        Implementations of this interface for both <b>WinForms</b> and <b>WPF</b> are included in <b>TcPluginInterface</b> assembly.</p>
+    <p>
+        You have to inform WLX wrapper what handler to use 
+        in your Lister plugin: <strong>WinForm</strong> or <strong>WPF</strong>.
+        <br/>    
+        Use <b>guiType</b> configuration key in the plugin <a href="#section-6-1">configuration file</a> to do it. 
+		Set it to <strong>WinForms</strong> or <strong>WPF</strong> values.
+		<br/>
+        <strong>WinForms</strong> value is default, it will be used if you omit <strong>
+		guiType</strong> key in your configuration.</p>
+    <p>
+        There is a problem with <b>WPF</b> based Lister plugins: I cannot find how to make <b>WPF</b> visual container serializable. 
+        (Sorry, I'm not familiar with <b>WPF</b> development &#9785;)
+        <br/>
+        As a result this visual container cannot be passed over Application Domain boundary.
+        It requires to load <b>WPF</b> based Lister managed plugin into default Application Domain.
+        <br/>
+        Set <b>startInDefaultDomain</b> configuration key to <b>"true"</b> to do it.</p>
+    <p>
+        Finally you have to have the following keys in the plugin configuration file for <b>WPF</b> based lister plugins:</p>
+    <div style="font-family: 'Courier New',Courier,monospace; margin-left: 40px; font-size: 14;
+        margin-top: 10px; margin-bottom: 10px; background-color: rgb(238, 238, 238);
+        width: 500px;">
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;add <span class="red">key</span>=<span class="purple">&quot;startInDefaultDomain&quot;</span>
+        <span class="red">value</span>=<span class="purple">&quot;true&quot;</span>/&gt;
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;add <span class="red">key</span>=<span class="purple">&quot;guiType&quot;</span>
+        <span class="red">value</span>=<span class="purple">&quot;WPF&quot;</span>/&gt;
+    </div>
+    <h3 id="section-6-6">
+        6.6. WinForms Lister plugins: keyboard handling.</h3>
+    <p>
+        Content of the managed Lister plugin visual container is displayed inside the Total Commander <b>Lister window</b>.
+        <br />
+        We want managed plugin to send some keyboard shortcuts into the TC Lister menu, such as:</p>
+        <ul>
+            <li><b>1, ..., 8</b> numbers to switch display mode (in Options menu), </li>
+            <li><b>P</b> and <b>N</b> to navigate to previous/next file (File menu), </li>
+            <li><b>Ctrl+P</b> to open <b>Print...</b> dialog (if Print method is implemented),</li>
+            <li><b>Escape</b> to close Lister window, etc.</li>
+        </ul>
+    <p>      
+        When WLX wrapper loads visual container into the <b>Lister window</b>, it also sets 
+        keyboard handler that intercepts keyboard combinations defined in Lister menu 
+        and send them into parent window.</p>
+    <p>
+        If new managed Lister plugin is <b>WinForms</b> based, visual container if derived
+        from <b>System.Windows.Forms.UserControl</b> class.
+        <br/>
+        Unfortunately, this class avoids getting the focus unless you take special programming tricks. 
+        It also won't respond meaningfully to keyboard messages even when it does have focus.</p>
+    <p>
+        It's a reason to have special property in managed Lister plugin</p>  
+        <div style="font-family: 'Courier New',Courier,monospace; margin-left: 40px; font-size: 14;
+            margin-top: 10px; margin-bottom: 10px; background-color: rgb(238, 238, 238);
+            width: 600px;">
+            <b>public object</b> FocusedControl { <b>get</b>; <b>set</b>; }
+        </div>
+    <p>    
+        to notify WLX wrapper what visual control of <b>WinForms</b> based plugin will send 
+        keyboard shortcuts to the parent window.
+        <br />
+        Just set this property to the topmost visual control inside the visual container 
+        returned by <b>Load</b> method call.</p>
+    <p>
+        Otherwise, if <b>FocusedControl == null</b>, <b>WinForms</b> based managed Lister plugin 
+        will not communicate to parent TC <b>Lister window</b>.</p>
+        
+    <hr align="left" style="width: 556px" width="50%" />
+    <h2 id="section-7">
+        7. Deployment.</h2>
+    <p>
+        The following components have to be installed on the client computer to run newly-created
+        plugin:</p>
+    <ol>
+        <li>Microsoft .NET Framework, </li>
+        <li>Core assemblies from the provided .NET Plugin Interface,</li> 
+        <li>Content of the output folder of the new plugin project. </li>
+    </ol>
+    <p>
+        Components 1 and 2 are required for any plugin built with provided Interface and
+        should only be installed once on client computer.
+        <br/>
+        Component 3 is specific for concrete plugin.</p>
+    <h3 id="section-7-1">
+        7.1. Microsoft .NET Framework.</h3>
+    <p>
+        Core .NET Interface assemblies require .NET Framework 4.0.
+		<br/>
+        In most cases this .NET Framework vesion is already installed on the client computer.
+        <br/>
+        Otherwise client can download required version from the <a href="http://www.microsoft.com/net">official site</a>.</p>
+    <h3 id="section-7-2">
+        7.2. Core .NET Plugin Interface assemblies.</h3>
+    <p>
+        The preferred place for these assemblies is .NET Global Assembly Cache (GAC) on client computer.</p>
+    <p>
+        Two assemblies from provided .NET Plugin Interface - <b>TcPluginInterface</b>
+        and <b>TcPluginTools</b> - are required in order for any TC plugin developed with provided
+        .NET Interface to work.
+        <br/>
+        <a href="#section-3-3"><b>Deployment</b> folder</a> contains Windows Installer
+        package <b>TcPluginSetup.msi</b> used to install/remove the <b>Release</b> versions 
+        of required assemblies into the GAC.</p>
+    <p>
+        Installation package has to be executed on the client computer before plugin installation.</p>
+    <p>
+        If required assemblies were already installed on client computer before (during another managed 
+        plugin installation) - installation packages will show Repair/Remove screen after start.
+        <br/>
+        In this case client can ignore installation.</p>
+    <h3>
+        7.3. Plugin folder.</h3>
+    <p>
+        After the full cycle of debugging plugin developer will have the following files
+        in the output (Release) folder:</p>
+    <ul>
+        <li>Plugin wrapper, real TC plugin with appropriate extension (.wfx, .wlx, .wdx or .wcx),</li>
+        <li>64-bit version of plugin wrapper (with extension like .wfx64),</li>
+        <li>Assembly file with the same name as plugin wrapper and .dll extension - managed
+            plugin providing main functionality.</li>
+    </ul>
+    <p>
+        Also there can be some additional files, depending on new plugin architecture:</p>
+    <ul>
+        <li>Plugin <a href="#section-6-1">configuration files</a> (separate for 32-bit and 64-bit
+            TC plugins),</li>
+        <li>Additional assemblies implementing some specific parts of plugin functionality,</li>
+        <li>Some third-party assemblies and their configuration.
+            <br/>
+            (If you need some common features not implemented in standard .NET Framework - encoding/decoding,
+            access to specific data sources, etc).</li>
+    </ul>
+    <p>
+        You have to provide whole plugin folder for the client to deploy.</p>
+    <p>
+        You also can add appropriate <b>pluginst.inf</b> file, pack your plugin folder,
+        and deploy it using TC plugin auto-installation.</p>
+    <hr align="left" style="width: 556px" width="50%" />
+    <h2 id="section-8">
+        8. Source code for provided .NET Interface.</h2>
+    <p>
+        Source code is available at project's <a href="http://sourceforge.net/p/tcdotnetinterface/code/HEAD/tree/trunk/TcPluginCore/">
+        SourceForge page</a>.</p>
+    <p>
+        Code is provided under the <a href="http://www.opensource.org/licenses/mit-license.php">
+        MIT License</a>.</p>
+    <p>
+        Folder <b>TcPluginCore</b> contains full source code for Microsoft Visual Studio
+        solution containing the following projects:</p>
+    <table border="1" frame="box">
+        <tbody>
+            <tr>
+                <td width="180">TcPluginInterface</td>
+                <td width="580">Class library with interfaces and base classes for managed plugins.</td>
+            </tr>
+            <tr>
+                <td>TcPluginTools</td>
+                <td>Class library with classes for plugin loading, callbacks and error handling.</td>
+            </tr>
+            <tr>
+                <td>WfxWrapper</td>
+                <td>Class library with template for File System plugin wrapper.</td>
+            </tr>
+            <tr>
+                <td>WlxWrapper</td>
+                <td>Class library with template for Lister plugin wrapper.</td>
+            </tr>
+            <tr>
+                <td>WcxWrapper</td>
+                <td>Class library with template for Packer plugin wrapper.</td>
+            </tr>
+            <tr>
+                <td>WdxWrapper</td>
+                <td>Class library with template for Content plugin wrapper.</td>
+            </tr>
+            <tr>
+                <td>QSWrapper</td>
+                <td>Class library with template for QuickSearch plugin wrapper.</td>
+            </tr>
+            <tr>
+                <td>WrapperBuilder</td>
+                <td>Console application to build plugin wrapper DLL.</td>
+            </tr>
+            <tr>
+                <td>TcPluginSetup</td>
+                <td>Windows Installer project. Creates MSI file installing main plugin assemblies
+                    (<b>TcPluginInterface</b> and <b>TcPluginTools</b>) into the GAC.</td>
+            </tr>
+        </tbody>
+    </table>
+    <br/>
+    <p>
+        After solution build folder <b>TcPluginCore\Build\Debug</b> will contain the same files as in the 
+        distributed <a href="#section-3-2"><b>TcPluginCore</b></a> folder. 
+        <br/>
+        Folder <b>TcPluginCore\Build\Release</b> will contain the same files as in the distributed 
+        <a href="#section-3-3"><b>Deployment</b></a> folder.</p>
+    <br/>
+    <hr align="left" style="width: 556px" width="50%" />
+    <p>
+        Please <a href="mailto:olegy.293@gmail.com">contact to author</a> if you have some questions.</p>
+    <p>    
+        Please let me know if this product is helpful for your development.
+        <br/>
+        Also please send me links to the new TC plugins created with provided interface.</p>
+    <br/>
+    <br/>
+</body>
+</html>

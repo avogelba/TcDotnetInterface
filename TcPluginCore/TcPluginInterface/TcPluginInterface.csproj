@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CF8CF6DE-6F50-4578-A431-1F87661ED977}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OY.TotalCommander.TcPluginInterface</RootNamespace>
+    <AssemblyName>TcPluginInterface</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>TcPluginInterface.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRules>-Microsoft.Design#CA1021;-Microsoft.Design#CA1051;-Microsoft.Design#CA1002;-Microsoft.Design#CA1045;-Microsoft.Design#CA1008;-Microsoft.Design#CA1027;-Microsoft.Design#CA1034;-Microsoft.Design#CA1007;-Microsoft.Globalization#CA1305;-Microsoft.Naming#CA1702;-Microsoft.Naming#CA1714;-Microsoft.Naming#CA1709;-Microsoft.Naming#CA1704;-Microsoft.Naming#CA1720;-Microsoft.Naming#CA1707;-Microsoft.Naming#CA1711;-Microsoft.Naming#CA1717;-Microsoft.Naming#CA1726;-Microsoft.Performance#CA1815</CodeAnalysisRules>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>none</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Content\ContentValue.cs" />
+    <Compile Include="Content\ContentPlugin.cs" />
+    <Compile Include="Content\ContentEnumerations.cs" />
+    <Compile Include="Content\ContentProgressEventArgs.cs" />
+    <Compile Include="Content\ContentFileDetails.cs" />
+    <Compile Include="CryptResult.cs" />
+    <Compile Include="FileSystem\FsPassword.cs" />
+    <Compile Include="FileSystem\LogEventArgs.cs" />
+    <Compile Include="FileSystem\ProgressEventArgs.cs" />
+    <Compile Include="FileSystem\RemoteInfo.cs" />
+    <Compile Include="FileSystem\FindData.cs" />
+    <Compile Include="FileSystem\FsEnumerations.cs" />
+    <Compile Include="FileSystem\NoMoreFilesException.cs" />
+    <Compile Include="DllExportAttribute.cs" />
+    <Compile Include="FileSystem\RequestEventArgs.cs" />
+    <Compile Include="FileSystem\FsPlugin.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Content\IContentPlugin.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FileSystem\IFsPlugin.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Lister\IListerHandlerBuilder.cs" />
+    <Compile Include="Lister\IListerPlugin.cs" />
+    <Compile Include="Lister\ListerEnumerations.cs" />
+    <Compile Include="Lister\PrintMargins.cs" />
+    <Compile Include="Lister\WFListerHandlerBuilder.cs" />
+    <Compile Include="Lister\WPFListerHandlerBuilder.cs" />
+    <Compile Include="Packer\PackerChangeVolEventArgs.cs" />
+    <Compile Include="Packer\PackerPassword.cs" />
+    <Compile Include="Packer\PackerProcessEventArgs.cs" />
+    <Compile Include="Packer\HeaderData.cs" />
+    <Compile Include="Packer\OpenArchiveData.cs" />
+    <Compile Include="Packer\IPackerPlugin.cs" />
+    <Compile Include="Lister\ListerPlugin.cs" />
+    <Compile Include="Packer\PackerEnumerations.cs" />
+    <Compile Include="Packer\PackerPlugin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PluginEventArgs.cs" />
+    <Compile Include="PluginType.cs" />
+    <Compile Include="PluginDefaultParams.cs" />
+    <Compile Include="MethodNotSupportedException.cs" />
+    <Compile Include="QuickSearch\IQSPlugin.cs" />
+    <Compile Include="QuickSearch\QSEnumerations.cs" />
+    <Compile Include="QuickSearch\QSPlugin.cs" />
+    <Compile Include="TcUtils.cs" />
+    <Compile Include="TcHandles.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="PluginPassword.cs" />
+    <Compile Include="TcPlugin.cs" />
+    <Compile Include="TcTrace.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TcWindow.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TcPluginInterface.pfx" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

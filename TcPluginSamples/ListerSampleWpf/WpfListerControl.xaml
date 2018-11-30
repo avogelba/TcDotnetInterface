@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="OY.TotalCommander.TcPlugins.ListerSampleWpf.WpfListerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="398" d:DesignWidth="477" Height="300" Width="400" Name="listerControl" Focusable="True">
+    <TabControl x:Name="tabControl" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <TabItem Header="File" TabIndex="0">
+            <TextBox x:Name="txtFile" TextWrapping="Wrap" HorizontalContentAlignment="Stretch" Margin="0,0,0,0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" AllowDrop="False" IsReadOnly="True" />
+        </TabItem>
+        <TabItem Header="Log" TabIndex="1">
+            <TextBox x:Name="txtLog" TextWrapping="Wrap" HorizontalContentAlignment="Stretch" Margin="0,0,0,0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" AllowDrop="False" />
+        </TabItem>
+        <TabItem Header="About" TabIndex="2" OverridesDefaultStyle="False">
+            <Grid 
+             Background="#FFD4D0C8"
+             Width="Auto"
+             Height="Auto"
+             Name="panelAbout"
+             >
+                <Grid.Resources>
+                    <Style x:Key="inlineText" TargetType="{x:Type TextBlock}">
+                        <Setter Property="Margin" Value="10,5,10,0"/>
+                        <Setter Property="FontWeight" Value="Normal"/>
+                        <Setter Property="FontSize" Value="11"/>
+                    </Style>
+                    <Style TargetType="{x:Type TextBox}">
+                        <Setter Property="Margin" Value="10,5,10,0"/>
+                    </Style>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0"
+          Grid.Row="0" 
+          Style="{StaticResource inlineText}">Sample WPF Lister plugin - simple wiewer with trace log</TextBlock>
+
+                <TextBlock Grid.Column="0"
+          Grid.Row="1"
+          Style="{StaticResource inlineText}"
+          Name="nameLabel" Text="Version 1.4"></TextBlock>
+
+                <TextBlock Grid.Column="0"
+          Grid.Row="2"
+          Style="{StaticResource inlineText}"
+          Name="addressLabel">  </TextBlock>
+
+                <TextBlock Grid.Column="0"
+          Grid.Row="3"
+          Style="{StaticResource inlineText}"
+          Name="cityLabel">Copyright 2015-16  Oleg Yuvashev</TextBlock>
+
+            </Grid>
+        </TabItem>
+    </TabControl>
+</UserControl>

@@ -1,0 +1,21 @@
+2016-08-22 Release version 1.4
+Changed: All interface assemblies recompiled with .NET Framework 4.0
+Fixed: Some problems with wrong paths to Resource Compiler and Zip Archiver in WrapperBuilder application.
+
+2015-03-25 Release version 1.3
+Added: Lister plugins - send TC Lister shortcuts to parent window.
+Fixed: Lifetime cycle problem with some plugin types.
+Updated: WrapperBuilder now builds both 32- and 64-bit wrappers in one call.
+
+2015-02-16 Release version 1.2
+Added: Lister plugins with WPF user interface.
+Fixed: Incorrect work with managed plugins created with .NET Framework 4.0 and higher (CLR4).
+Added: Sample lister plugin with WPF user interface.
+Added: Sample FS and lister plugins for CLR4.
+
+2014-10-29. Release version 1.1. 
+Added: Support for QuickSearch plugins (tcmatch.dll)
+
+2014-10-02. Release version 1.0. 
+First upload
+
