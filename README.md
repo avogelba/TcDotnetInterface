@@ -23,7 +23,9 @@ Main features:
 
 # Related projects I found so far
 - ![GIS Viewer](https://github.com/gepcel/GisViewer)
+	Sadly without sources!
 - ![Markdown Viewer](https://github.com/wangzhfeng/MarkdownViewer)
+	Sources Included, but no license.
 
 # License
 MIT
